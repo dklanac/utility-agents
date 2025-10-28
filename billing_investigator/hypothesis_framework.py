@@ -240,7 +240,7 @@ When analyzing a usage increase, follow this systematic approach:
 - Use `query_usage_patterns()` for aggregated insights
 
 ### Step 2: Calculate Key Metrics
-- Use `calculate_period_comparison()` to get overall change statistics
+- Calculate period-over-period changes for total usage and each appliance
 - Identify which appliances show the largest increases
 - Note: Changes >20% are typically significant, >50% are major
 
@@ -248,7 +248,7 @@ When analyzing a usage increase, follow this systematic approach:
 For each appliance showing >20% increase:
 
 **For HVAC (heating/cooling):**
-- Use `correlate_with_weather()` to check temperature relationship
+- Check correlation between temperature and HVAC usage
 - Compare degree-hours change to HVAC usage change
 - If HVAC increased >30% but degree-hours only +10% → likely thermostat or efficiency issue
 
@@ -264,7 +264,7 @@ For each appliance showing >20% increase:
 
 **For Other Loads:**
 - Look for new sustained patterns
-- Check time-of-day shifts with `analyze_time_patterns()`
+- Check for time-of-day shifts in usage patterns
 - Identify gradual vs sudden changes
 
 ### Step 4: Generate Hypotheses

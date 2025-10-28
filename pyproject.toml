@@ -38,21 +38,3 @@ build-backend = "uv_build"
 [tool.uv.build-backend]
 module-name = "billing_investigator"
 module-root = ""
-
-[tool.pytest.ini_options]
-tdd_guard_project_root = "/Users/dklanac/Code/utility-agents"
-console_output_style = "progress"
-addopts = "-vv -s"
-#addopts = "-vv -s --pdb"
-testpaths = ["tests/"]
-log_level = "DEBUG"
-log_cli = true
-log_auto_indent = true
-log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-log_cli_format = "[%(asctime)s] %(levelname)s (%(funcName)s) \t [%(pathname)s:%(lineno)d] %(message)s"
-filterwarnings = [
-    #"error",
-    "ignore::UserWarning",
-    # note the use of single quote below to denote "raw" strings in TOML
-    #'ignore:function ham\(\) is deprecated:DeprecationWarning',
-]

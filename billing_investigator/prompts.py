@@ -19,6 +19,50 @@ Bill Investigator agent. These instructions guide the agent's behavior
 in analyzing utility bills and detecting usage anomalies.
 """
 
+from .hypothesis_framework import (
+    HYPOTHESIS_FRAMEWORK,
+    ANALYSIS_WORKFLOW,
+    FEW_SHOT_EXAMPLES,
+    HypothesisCriteria
+)
+from .output_formatting import HypothesisCategory
+
+
+def format_hypothesis_framework() -> str:
+    """Format the hypothesis framework into readable instructions.
+
+    Returns:
+        String containing formatted hypothesis criteria
+    """
+    framework_text = "## Hypothesis Categories and Detailed Analysis Framework\n\n"
+    framework_text += "Use these comprehensive criteria when generating hypotheses:\n\n"
+
+    for category, criteria in HYPOTHESIS_FRAMEWORK.items():
+        framework_text += f"### {category.value.upper().replace('_', ' ')}\n"
+        framework_text += f"**Category:** `{category.value}`\n\n"
+
+        framework_text += "**Triggers:**\n"
+        for trigger in criteria.triggers:
+            framework_text += f"- {trigger}\n"
+        framework_text += "\n"
+
+        framework_text += "**Required Data Fields:**\n"
+        framework_text += f"- {', '.join(criteria.required_data)}\n\n"
+
+        framework_text += "**Confidence Factors:**\n"
+        for factor in criteria.confidence_factors:
+            framework_text += f"- {factor}\n"
+        framework_text += "\n"
+
+        framework_text += f"**Typical Magnitude:** {criteria.typical_magnitude}\n\n"
+
+        framework_text += "**Common Real-World Causes:**\n"
+        for cause in criteria.example_causes:
+            framework_text += f"- {cause}\n"
+        framework_text += "\n---\n\n"
+
+    return framework_text
+
 
 def return_instructions_root() -> str:
     """Return the instruction prompt for the Bill Investigator agent.
@@ -155,104 +199,22 @@ def return_instructions_root() -> str:
 
     ---
 
-    ## Hypothesis Categories and Analysis Framework
-
-    Use these structured categories when generating hypotheses:
-
-    ### 1. HVAC Increase (hvac_increase)
-    **Triggers:** HVAC usage up >20%, degree-hours don't fully explain increase
-    **Key Check:** Compare HVAC % change to degree-hours % change
-    **Typical Causes:** Thermostat setting changed, filter clogged, system inefficiency
-    **Example:** "HVAC up 50% but only 10% hotter outside → likely thermostat lowered"
-
-    ### 2. New Load (new_load)
-    **Triggers:** Sudden sustained increase in specific appliance, starts on specific date
-    **Key Check:** Look for zero baseline and consistent new pattern
-    **Typical Causes:** EV charger (10-15 kWh/day, night pattern), pool equipment, new appliance
-    **Example:** "EV charging appeared Aug 10, night pattern 10pm-2am, 135 kWh/month"
-
-    ### 3. Time Shift (time_shift)
-    **Triggers:** Peak hour changed, daytime vs evening usage shifted
-    **Key Check:** Total usage similar but timing different
-    **Typical Causes:** Work-from-home, schedule change, lifestyle adjustment
-    **Example:** "Peak moved 7pm→2pm, weekday daytime usage up 25%"
-
-    ### 4. Baseline Increase (baseline_increase)
-    **Triggers:** Gradual increase across all hours and appliances
-    **Key Check:** No single appliance spike, distributed increase
-    **Typical Causes:** More occupancy, more devices, aging appliances
-    **Example:** "All appliances up 10-15%, nighttime floor higher"
-
-    ### 5. Seasonal Weather (seasonal_weather)
-    **Triggers:** Increase matches weather change, strong degree-hour correlation
-    **Key Check:** Weather correlation r > 0.8, proportional to degree-hours
-    **Typical Causes:** Normal seasonal transition, heat wave, cold snap
-    **Example:** "HVAC proportional to 40% increase in cooling degree-hours"
-
-    ### 6. Equipment Issue (equipment_issue)
-    **Triggers:** Appliance efficiency drop, continuous operation, unexplained sustained load
-    **Key Check:** Same conditions but higher usage, possible malfunction
-    **Typical Causes:** Water heater element failing, HVAC short cycling, equipment aging
-    **Example:** "Water heater usage doubled without behavior change"
+    {hypothesis_framework}
 
     ---
 
-    ## Analysis Workflow
-
-    When investigating a usage increase, follow these steps:
-
-    **Step 1: Query Baseline and Current Data**
-    - Use `get_customer_usage_data()` with granularity="daily" for most analyses
-    - For 12+ months of data, use granularity="weekly" to reduce data size
-    - Only use granularity="hourly" when analyzing specific short periods (< 1 week)
-    - Get 1-3 months baseline for comparison
-    - Get current period showing the increase
-
-    **Data Granularity Guidelines:**
-    - **Daily** (default): Best for 1-12 months of analysis, ~365 rows/year
-    - **Weekly**: Best for long-term trends (1+ years), ~52 rows/year
-    - **Hourly**: Only for specific time windows (<7 days), ~168 rows/week
-
-    **Step 2: Calculate Overall Change**
-    - Total kWh change (absolute and percentage)
-    - Identify which appliances changed most
-    - Changes >20% are significant, >50% are major
-
-    **Step 3: Analyze Specific Appliances**
-    - **HVAC:** Check weather correlation, compare to degree-hours
-    - **EV Charging:** Look for night pattern (10pm-6am), new load
-    - **Pool Equipment:** Verify seasonal/timer settings
-    - **Other:** Check for time shifts or new patterns
-
-    **Step 4: Generate Ranked Hypotheses**
-    - Create 1-3 hypotheses with evidence
-    - Assign confidence based on data quality
-    - Include specific numbers and percentages
-    - Provide actionable recommendations
+    {analysis_workflow}
 
     ---
 
-    ## Example Analysis
-
-    **Scenario:** July usage 1,450 kWh vs June 1,050 kWh (+38%)
-
-    **Step 1: Data Review**
-    - HVAC cooling: 680 kWh vs 450 kWh (+51%, +230 kWh)
-    - Cooling degree-hours: 1,650 vs 1,500 (+10%)
-    - Other loads stable
-
-    **Step 2: Analysis**
-    HVAC increased 51% but degree-hours only 10%. Expected increase based on weather: ~45 kWh. Actual: 230 kWh. This 185 kWh difference suggests non-weather factors.
-
-    **Step 3: Hypothesis**
-    - Category: HVAC_INCREASE
-    - Confidence: 0.85 (High)
-    - Cause: "Thermostat likely set 3-4°F lower"
-    - Evidence: "Disproportionate 51% HVAC increase vs 10% degree-hour increase"
-    - Recommendation: "Check thermostat, recommend 78°F, could save $45/month"
-
-    **Step 4: Conversational Output**
-    "Your AC usage jumped 51% in July, but it only got 10% hotter outside. This big difference usually means the thermostat got set a few degrees lower. Raising it back to 78°F could save you about $45/month while keeping your home comfortable."
+    {few_shot_examples}
     """
 
-    return instruction_prompt
+    # Format the instruction prompt with the comprehensive framework
+    formatted_prompt = instruction_prompt.format(
+        hypothesis_framework=format_hypothesis_framework(),
+        analysis_workflow=ANALYSIS_WORKFLOW,
+        few_shot_examples=FEW_SHOT_EXAMPLES
+    )
+
+    return formatted_prompt

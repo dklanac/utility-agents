@@ -52,17 +52,17 @@ BILL_INVESTIGATOR_MODEL=gemini-2.5-pro
 
 ```bash
 # Create 20 customers with 12 months of synthetic data
-uv run python billing_investigator/support/bigquery_loader/setup_all.py
+uv run python billing_investigator/support/data_generators/setup_all.py
 
 # Custom generation
-uv run python billing_investigator/support/bigquery_loader/setup_all.py \
+uv run python billing_investigator/support/data_generators/setup_all.py \
   --customers 10 \
   --months 6 \
   --generate-only  # Don't load to BigQuery
   --force          # Overwrite existing
 
 # Generate specific customer profiles
-uv run python billing_investigator/support/bigquery_loader/setup_all.py \
+uv run python billing_investigator/support/data_generators/setup_all.py \
   --profile suburban_family \
   --anomaly thermostat_change
 ```
