@@ -93,6 +93,19 @@ uv run adk web
 "Find optimal EV charging times for CUST_006"
 ```
 
+### Identifying Customer Types
+
+If you want to find a particular set of customers who have exhibited one of our synthetic data behaviors, you can issue a query similar to this one below:
+
+```sql
+SELECT
+  DISTINCT customer_id
+FROM
+  `my-project-id.my-dataset-id.my-table`
+WHERE
+  ev_charging_kwh > 0
+```
+
 ## System Architecture
 
 ```

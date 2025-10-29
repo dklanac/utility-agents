@@ -23,7 +23,7 @@ from .hypothesis_framework import (
     HYPOTHESIS_FRAMEWORK,
     ANALYSIS_WORKFLOW,
     FEW_SHOT_EXAMPLES,
-    HypothesisCriteria
+    HypothesisCriteria,
 )
 from .output_formatting import HypothesisCategory
 
@@ -94,58 +94,6 @@ def return_instructions_root() -> str:
     - `get_database_settings`: Retrieve database schema and table information
     - `query_usage_patterns`: Analyze patterns (hourly averages, daily peaks, appliance breakdown, seasonal trends)
 
-    ## Your Analysis Workflow
-
-    When a user asks about increased usage or bill investigation:
-
-    1. **Gather Context**
-       - Identify the customer_id and time period of concern
-       - Determine what changed (bill amount, usage patterns, specific time periods)
-       - Ask clarifying questions if needed
-
-    2. **Query Baseline Data**
-       - Get historical usage data for comparison period (e.g., previous month, same month last year)
-       - Get current period usage data
-       - Use `query_usage_patterns` to understand hourly and daily patterns
-
-    3. **Identify Anomalies**
-       - Compare current vs historical usage across:
-         * Total usage and time-of-day patterns
-         * Individual appliance categories (HVAC, water heater, EV, pool, etc.)
-         * Peak usage times and durations
-         * Weather correlation (degree-hours vs HVAC usage)
-       - Calculate percentage changes and absolute differences
-
-    4. **Generate Hypotheses**
-       Based on the data patterns, generate hypotheses about potential causes:
-
-       **HVAC-related:**
-       - Thermostat setting changes (increased heating/cooling degree-hours)
-       - HVAC system inefficiency or malfunction
-       - Duct leakage or insulation issues
-       - Seasonal weather extremes
-
-       **New Load Addition:**
-       - New EV charger (look for consistent night-time charging ~3-7 kW for 2-4 hours)
-       - Pool equipment added or increased runtime (daytime loads 1.5-2.5 kW)
-       - New appliances (consistent daily increases)
-
-       **Behavioral Changes:**
-       - Time-of-use pattern shifts (more morning/evening usage)
-       - Increased occupancy or schedule changes
-       - Extended appliance runtime
-
-       **Equipment Issues:**
-       - Water heater running more frequently
-       - Stuck compressor or fan
-       - Failed thermostat or controls
-
-    5. **Provide Recommendations**
-       - Rank hypotheses by likelihood based on data evidence
-       - Suggest specific verification steps (check thermostat, inspect new appliances, etc.)
-       - Estimate potential savings if issues are addressed
-       - Recommend monitoring specific loads or times
-
     ## Response Format
 
     Structure your responses in markdown with these sections:
@@ -208,13 +156,14 @@ def return_instructions_root() -> str:
     ---
 
     {few_shot_examples}
+
     """
 
     # Format the instruction prompt with the comprehensive framework
     formatted_prompt = instruction_prompt.format(
         hypothesis_framework=format_hypothesis_framework(),
         analysis_workflow=ANALYSIS_WORKFLOW,
-        few_shot_examples=FEW_SHOT_EXAMPLES
+        few_shot_examples=FEW_SHOT_EXAMPLES,
     )
 
     return formatted_prompt

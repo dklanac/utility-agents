@@ -1,5 +1,6 @@
 **/data_files
 **/__pycache__
+**/*evalset.json
 
 .venv
 
